@@ -1,11 +1,33 @@
+version: '3.8'
+
 services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      DB_HOST: mysql
+      DB_DATABASE: backend_db
+      DB_USER: root
+      DB_PASSWORD: yourpassword
+      TOKEN_SECRET: mysecretkey
+    depends_on:
+      - mysql
+    command: >
+      sh -c "
+      npx sequelize-cli db:create &&
+      npx sequelize-cli db:migrate &&
+      npx sequelize-cli db:seed:all &&
+      npm run dev"
+
   mysql:
     image: mysql:8.0
-    container_name: mysql_container
-    restart: always
+    container_name: mysql-backend
     environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: dev_db
+      MYSQL_ROOT_PASSWORD: yourpassword
+      MYSQL_DATABASE: backend_db
     ports:
       - "3306:3306"
     volumes:
